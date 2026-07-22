@@ -1,0 +1,60 @@
+:root {
+  /* Colors - Dark theme */
+  --color-bg-primary: #1a1a2e;
+  --color-bg-secondary: #16213e;
+  --color-bg-surface: #1e2a45;
+  --color-bg-hover: #253559;
+  --color-bg-canvas-outer: #2a2a3e;
+  --color-bg-canvas: #ffffff;
+
+  --color-text-primary: #e0e0f0;
+  --color-text-secondary: #a0a0c0;
+  --color-text-muted: #707090;
+
+  --color-accent-primary: #6c63ff;
+  --color-accent-primary-hover: #7b73ff;
+  --color-accent-success: #3dd68c;
+  --color-accent-warning: #ffb74d;
+  --color-accent-danger: #ff5252;
+  --color-accent-info: #40c4ff;
+
+  --color-border: #2e3a5a;
+  --color-border-light: #3a4a6a;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+
+  /* Layout sizes */
+  --toolbar-height: 48px;
+  --sidebar-width: 280px;
+  --property-panel-width: 280px;
+  --mobile-nav-height: 56px;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+  /* Z-index layers */
+  --z-canvas: 1;
+  --z-sidebar: 10;
+  --z-toolbar: 20;
+  --z-panel: 30;
+  --z-mobile-nav: 40;
+  --z-dialog: 50;
+  --z-toast: 60;
+}

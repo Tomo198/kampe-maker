@@ -1,0 +1,60 @@
+.editor-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.editor-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.editor-sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  background: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+  overflow-y: auto;
+  z-index: var(--z-sidebar);
+}
+
+.editor-canvas-area {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-bg-canvas-outer);
+  position: relative;
+  overflow: hidden;
+}
+
+.editor-property-panel {
+  width: var(--property-panel-width);
+  min-width: var(--property-panel-width);
+  background: var(--color-bg-secondary);
+  border-left: 1px solid var(--color-border);
+  overflow-y: auto;
+  z-index: var(--z-panel);
+}
+
+/* Tablet: hide property panel by default */
+@media (max-width: 1024px) {
+  .editor-property-panel {
+    display: none;
+  }
+}
+
+/* Mobile: hide sidebar, show bottom nav */
+@media (max-width: 768px) {
+  .editor-sidebar {
+    display: none;
+  }
+
+  .editor-property-panel {
+    display: none;
+  }
+
+  .editor-canvas-area {
+    padding-bottom: var(--mobile-nav-height);
+  }
+}

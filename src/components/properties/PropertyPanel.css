@@ -1,0 +1,29 @@
+.property-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.property-panel-header {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.property-panel-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.property-panel-content {
+  flex: 1;
+  padding: var(--space-md);
+  overflow-y: auto;
+}
+
+.property-panel-placeholder {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  padding-top: var(--space-2xl);
+}

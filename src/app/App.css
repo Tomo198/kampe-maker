@@ -1,0 +1,40 @@
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.placeholder-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: var(--space-lg);
+  color: var(--color-text-primary);
+}
+
+.placeholder-screen h1 {
+  font-size: 2rem;
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-info));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.placeholder-screen p {
+  color: var(--color-text-secondary);
+}
+
+.placeholder-button {
+  padding: var(--space-sm) var(--space-xl);
+  background: var(--color-accent-primary);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  transition: background var(--transition-fast);
+}
+
+.placeholder-button:hover {
+  background: var(--color-accent-primary-hover);
+}
