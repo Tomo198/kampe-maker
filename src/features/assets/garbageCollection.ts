@@ -17,13 +17,7 @@ export async function cleanupOrphanedBlobs() {
     // 1. Collect from saved projects in DB
     const projects = await db.projects.toArray()
     for (const project of projects) {
-      try {
-        const parsedData = JSON.parse(project.data)
-        const assets = parsedData.assets || []
-        collectAssetBlobKeys(assets, referencedKeys)
-      } catch (e) {
-        console.warn('Failed to parse project data during garbage collection', e)
-      }
+      if (project.assets) collectAssetBlobKeys(project.assets, referencedKeys)
     }
 
     // 2. Collect from active in-memory session (past, future, current project)

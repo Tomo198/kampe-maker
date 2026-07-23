@@ -4,7 +4,7 @@ export type AppScreen = 'projectList' | 'newProject' | 'editor' | 'help'
 
 export type SidebarTab = 'assets' | 'text' | 'stamps' | 'shapes' | 'layers'
 
-export type SaveStatus = 'idle' | 'unsaved' | 'saving' | 'saved' | 'error' | 'capacityWarning'
+export type SaveStatus = 'idle' | 'dirty' | 'scheduled' | 'saving' | 'saved' | 'error'
 
 type UIState = {
   // Screen navigation

@@ -22,9 +22,13 @@ describe('KampeDB', () => {
       const project: ProjectRecord = {
         id: 'test-project-1',
         name: 'テストプロジェクト',
-        createdAt: '2025-01-01T00:00:00.000Z',
-        updatedAt: '2025-01-01T00:00:00.000Z',
-        data: JSON.stringify({ canvas: { width: 1920, height: 1080 } }),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        formatVersion: 1,
+        canvas: { width: 100, height: 100, backgroundColor: '#fff', transparent: false, gridEnabled: false, gridSize: 20, snapEnabled: true },
+        assets: [],
+        elements: [],
+        groups: [],
       }
 
       await testDb.projects.put(project)
@@ -41,7 +45,11 @@ describe('KampeDB', () => {
         name: '初期名',
         createdAt: '2025-01-01T00:00:00.000Z',
         updatedAt: '2025-01-01T00:00:00.000Z',
-        data: '{}',
+        formatVersion: 1,
+        canvas: { width: 100, height: 100, backgroundColor: '#fff', transparent: false, gridEnabled: false, gridSize: 20, snapEnabled: true },
+        assets: [],
+        elements: [],
+        groups: [],
       }
 
       await testDb.projects.put(project)
@@ -61,7 +69,11 @@ describe('KampeDB', () => {
         name: '削除テスト',
         createdAt: '2025-01-01T00:00:00.000Z',
         updatedAt: '2025-01-01T00:00:00.000Z',
-        data: '{}',
+        formatVersion: 1,
+        canvas: { width: 100, height: 100, backgroundColor: '#fff', transparent: false, gridEnabled: false, gridSize: 20, snapEnabled: true },
+        assets: [],
+        elements: [],
+        groups: [],
       }
 
       await testDb.projects.put(project)
@@ -78,14 +90,22 @@ describe('KampeDB', () => {
           name: 'P1',
           createdAt: '2025-01-01T00:00:00.000Z',
           updatedAt: '2025-01-01T00:00:00.000Z',
-          data: '{}',
+          formatVersion: 1,
+          canvas: { width: 100, height: 100, backgroundColor: '#fff', transparent: false, gridEnabled: false, gridSize: 20, snapEnabled: true },
+          assets: [],
+          elements: [],
+          groups: [],
         },
         {
           id: 'p2',
           name: 'P2',
           createdAt: '2025-01-02T00:00:00.000Z',
           updatedAt: '2025-01-02T00:00:00.000Z',
-          data: '{}',
+          formatVersion: 1,
+          canvas: { width: 100, height: 100, backgroundColor: '#fff', transparent: false, gridEnabled: false, gridSize: 20, snapEnabled: true },
+          assets: [],
+          elements: [],
+          groups: [],
         },
       ])
 

@@ -105,11 +105,24 @@ describe('garbageCollection', () => {
     await db.projects.put({
       id: 'p1',
       name: 'Project 1',
-      createdAt: '',
-      updatedAt: '',
-      data: JSON.stringify({
-        assets: [{ id: 'a1', originalBlobKey: 'used-blob' }],
-      }),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      formatVersion: 1,
+      canvas: { width: 100, height: 100, backgroundColor: '#fff', transparent: false, gridEnabled: false, gridSize: 20, snapEnabled: true },
+      assets: [{
+        id: 'a1',
+        originalBlobKey: 'used-blob',
+        name: 'test',
+        mimeType: 'image/png',
+        width: 100,
+        height: 100,
+        sizeBytes: 1000,
+        previewBlobKey: 'prev',
+        thumbnailBlobKey: 'thumb',
+        createdAt: new Date().toISOString()
+      }],
+      elements: [],
+      groups: [],
     })
 
     await cleanupOrphanedBlobs()

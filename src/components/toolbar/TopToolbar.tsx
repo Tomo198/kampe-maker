@@ -1,6 +1,7 @@
 import { useUIStore } from '../../store/uiStore'
 import { useEditorStore } from '../../store/editorStore'
 import { useProjectStore } from '../../store/projectStore'
+import { useAutoSave } from '../../features/projects/useAutoSave'
 import { exportToPNG } from '../../features/export/exportImage'
 import { APP_DISPLAY_NAME } from '../../constants/app'
 import './TopToolbar.css'
@@ -12,6 +13,7 @@ export function TopToolbar() {
   const isExporting = useEditorStore((s) => s.isExporting)
   const setIsExporting = useEditorStore((s) => s.setIsExporting)
   const project = useProjectStore((s) => s.project)
+  const { triggerImmediateSave } = useAutoSave()
 
   const handleExport = async () => {
     if (!project || isExporting) return
@@ -32,12 +34,12 @@ export function TopToolbar() {
         return '保存済み'
       case 'saving':
         return '保存中...'
-      case 'unsaved':
+      case 'dirty':
         return '未保存'
+      case 'scheduled':
+        return '保存待機中'
       case 'error':
         return '保存失敗'
-      case 'capacityWarning':
-        return '容量不足'
       default:
         return ''
     }
@@ -58,11 +60,10 @@ export function TopToolbar() {
       </div>
 
       <div className="toolbar-center">
-        {saveStatusLabel && (
-          <span className={`toolbar-save-status toolbar-save-status--${saveStatus}`}>
-            {saveStatusLabel}
-          </span>
-        )}
+        <span style={{ fontSize: '0.85rem', color: '#666', marginRight: '16px' }}>{saveStatusLabel}</span>
+        <button className="toolbar-button" onClick={() => triggerImmediateSave()}>
+          保存
+        </button>
         <span className="toolbar-zoom">{Math.round(zoom * 100)}%</span>
       </div>
 

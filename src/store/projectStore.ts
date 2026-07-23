@@ -7,7 +7,7 @@ type ProjectState = {
   project: Project | null
 
   // Actions for initialization
-  initProject: (project: Project) => void
+  initProject: (project: Project, revision?: number) => void
 
   // Actions for canvas settings
   updateCanvasSettings: (settings: Partial<CanvasSettings>) => void
@@ -41,6 +41,11 @@ type ProjectState = {
   sendToBack: (id: string, isGroup?: boolean) => void
   bringForward: (id: string, isGroup?: boolean) => void
   sendBackward: (id: string, isGroup?: boolean) => void
+
+  // Revision tracking
+  projectRevision: number
+  lastSavedRevision: number
+  setLastSavedRevision: (rev: number) => void
 }
 
 const commitProjectUpdate = (state: ProjectState, newProject: Project): Partial<ProjectState> => {
@@ -60,6 +65,7 @@ const commitProjectUpdate = (state: ProjectState, newProject: Project): Partial<
     project: { ...newProject, updatedAt: new Date().toISOString() },
     past: newPast,
     future: [],
+    projectRevision: state.projectRevision + 1,
   }
 }
 
@@ -68,8 +74,11 @@ export const useProjectStore = create<ProjectState>((set) => ({
 
   past: [],
   future: [],
+  projectRevision: 0,
+  lastSavedRevision: 0,
+  setLastSavedRevision: (lastSavedRevision) => set({ lastSavedRevision }),
 
-  initProject: (project) => set({ project, past: [], future: [] }),
+  initProject: (project, revision = 0) => set({ project, past: [], future: [], projectRevision: revision, lastSavedRevision: revision }),
 
   undo: () =>
     set((state) => {
@@ -80,6 +89,7 @@ export const useProjectStore = create<ProjectState>((set) => ({
         project: previousProject,
         past: newPast,
         future: [state.project, ...state.future],
+        projectRevision: state.projectRevision + 1,
       }
     }),
 
@@ -92,6 +102,7 @@ export const useProjectStore = create<ProjectState>((set) => ({
         project: nextProject,
         past: [...state.past, state.project],
         future: newFuture,
+        projectRevision: state.projectRevision + 1,
       }
     }),
 

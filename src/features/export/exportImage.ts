@@ -11,7 +11,7 @@ import type {
 } from '../../models/element'
 import { getPixelCrop } from '../../utils/crop'
 
-export async function exportToPNG(project: Project): Promise<void> {
+export async function renderProjectToCanvas(project: Project, maxEdge?: number): Promise<{ canvas: HTMLCanvasElement, stage: Konva.Stage }> {
   // Wait for all fonts to load
   await document.fonts.ready
 
@@ -211,8 +211,23 @@ export async function exportToPNG(project: Project): Promise<void> {
   // Force draw
   layer.draw()
 
-  // Export using toCanvas -> toBlob
-  const canvas = stage.toCanvas()
+  // Calculate pixel ratio if maxEdge is provided
+  let pixelRatio = 1
+  if (maxEdge) {
+    const largest = Math.max(width, height)
+    if (largest > maxEdge) {
+      pixelRatio = maxEdge / largest
+    }
+  }
+
+  // Export using toCanvas
+  const canvas = stage.toCanvas({ pixelRatio })
+
+  return { canvas, stage }
+}
+
+export async function exportToPNG(project: Project): Promise<void> {
+  const { canvas, stage } = await renderProjectToCanvas(project)
 
   return new Promise<void>((resolve, reject) => {
     canvas.toBlob((blob) => {
@@ -233,5 +248,20 @@ export async function exportToPNG(project: Project): Promise<void> {
       stage.destroy()
       resolve()
     }, 'image/png')
+  })
+}
+
+export async function exportToBlob(project: Project, options: { maxEdge?: number, mimeType: string }): Promise<Blob> {
+  const { canvas, stage } = await renderProjectToCanvas(project, options.maxEdge)
+
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      stage.destroy()
+      if (!blob) {
+        reject(new Error('Blob generation failed'))
+        return
+      }
+      resolve(blob)
+    }, options.mimeType)
   })
 }
