@@ -21,10 +21,6 @@ type UIState = {
   propertyPanelOpen: boolean
   setPropertyPanelOpen: (open: boolean) => void
 
-  // Canvas view
-  zoomLevel: number
-  setZoomLevel: (level: number) => void
-
   // Save status
   saveStatus: SaveStatus
   setSaveStatus: (status: SaveStatus) => void
@@ -47,9 +43,6 @@ export const useUIStore = create<UIState>((set) => ({
 
   propertyPanelOpen: true,
   setPropertyPanelOpen: (open) => set({ propertyPanelOpen: open }),
-
-  zoomLevel: 1,
-  setZoomLevel: (level) => set({ zoomLevel: level }),
 
   saveStatus: 'idle',
   setSaveStatus: (status) => set({ saveStatus: status }),

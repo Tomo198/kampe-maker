@@ -2,6 +2,8 @@ import { ErrorBoundary } from '../components/dialogs/ErrorBoundary'
 import { EditorLayout } from '../components/layout/EditorLayout'
 import { useUIStore } from '../store/uiStore'
 import type { AppScreen } from '../store/uiStore'
+import { useProjectStore } from '../store/projectStore'
+import { DEFAULT_CANVAS_PRESET } from '../constants/canvas'
 
 function AppContent() {
   const currentScreen = useUIStore((s) => s.currentScreen)
@@ -24,16 +26,38 @@ function AppContent() {
   return <div className="app">{renderScreen(currentScreen)}</div>
 }
 
-// Placeholder screens for Phase 0
 function ProjectListPlaceholder() {
   const setScreen = useUIStore((s) => s.setScreen)
+  const initProject = useProjectStore((s) => s.initProject)
   return (
     <div className="placeholder-screen">
       <h1>攻略カンペメーカー</h1>
       <p>プロジェクト一覧（Phase 1で実装）</p>
       <button
         className="placeholder-button"
-        onClick={() => setScreen('editor')}
+        onClick={() => {
+          // Phase 1 Dummy Initialization
+          initProject({
+            id: 'default-project',
+            name: '名称未設定',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            formatVersion: 1,
+            canvas: {
+              width: DEFAULT_CANVAS_PRESET.width,
+              height: DEFAULT_CANVAS_PRESET.height,
+              backgroundColor: '#ffffff',
+              transparent: false,
+              gridEnabled: false,
+              gridSize: 20,
+              snapEnabled: false,
+            },
+            assets: [],
+            elements: [],
+            groups: [],
+          })
+          setScreen('editor')
+        }}
         aria-label="エディターを開く"
       >
         エディターを開く

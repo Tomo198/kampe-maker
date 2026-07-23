@@ -50,12 +50,22 @@ export type StampElement = BaseElement & {
   cornerRadius: number
 }
 
-export type ShapeElement = BaseElement & {
+export type BoxShapeElement = BaseElement & {
   type: 'shape'
-  shapeType: 'rectangle' | 'ellipse' | 'line' | 'arrow'
+  shapeType: 'rectangle' | 'ellipse'
   strokeColor: string
   strokeWidth: number
   fillColor?: string
 }
+
+export type LineShapeElement = Omit<BaseElement, 'width' | 'height'> & {
+  type: 'shape'
+  shapeType: 'line' | 'arrow'
+  strokeColor: string
+  strokeWidth: number
+  points: [number, number, number, number] // [startX, startY, endX, endY] relative to x, y (which is typically bounding box top-left, but points defines actual ends)
+}
+
+export type ShapeElement = BoxShapeElement | LineShapeElement
 
 export type CanvasElement = ImageElement | TextElement | StampElement | ShapeElement

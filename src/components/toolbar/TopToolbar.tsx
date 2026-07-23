@@ -1,11 +1,30 @@
 import { useUIStore } from '../../store/uiStore'
+import { useEditorStore } from '../../store/editorStore'
+import { useProjectStore } from '../../store/projectStore'
+import { exportToPNG } from '../../features/export/exportImage'
 import { APP_DISPLAY_NAME } from '../../constants/app'
 import './TopToolbar.css'
 
 export function TopToolbar() {
   const setScreen = useUIStore((s) => s.setScreen)
   const saveStatus = useUIStore((s) => s.saveStatus)
-  const zoomLevel = useUIStore((s) => s.zoomLevel)
+  const zoom = useEditorStore((s) => s.zoom)
+  const isExporting = useEditorStore((s) => s.isExporting)
+  const setIsExporting = useEditorStore((s) => s.setIsExporting)
+  const project = useProjectStore((s) => s.project)
+
+  const handleExport = async () => {
+    if (!project || isExporting) return
+    setIsExporting(true)
+    try {
+      await exportToPNG(project)
+    } catch (e) {
+      console.error(e)
+      alert('書き出しに失敗しました。')
+    } finally {
+      setIsExporting(false)
+    }
+  }
 
   const saveStatusLabel = (() => {
     switch (saveStatus) {
@@ -44,7 +63,7 @@ export function TopToolbar() {
             {saveStatusLabel}
           </span>
         )}
-        <span className="toolbar-zoom">{Math.round(zoomLevel * 100)}%</span>
+        <span className="toolbar-zoom">{Math.round(zoom * 100)}%</span>
       </div>
 
       <div className="toolbar-right">
@@ -52,9 +71,10 @@ export function TopToolbar() {
           className="toolbar-button toolbar-button--export"
           aria-label="画像を保存"
           title="画像を保存"
-          disabled
+          onClick={handleExport}
+          disabled={!project || isExporting}
         >
-          画像を保存
+          {isExporting ? '保存中...' : '画像を保存'}
         </button>
       </div>
     </header>

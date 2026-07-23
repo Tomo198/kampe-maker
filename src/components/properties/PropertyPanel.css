@@ -15,6 +15,39 @@
   color: var(--color-text-primary);
 }
 
+.property-input {
+  width: 100%;
+  padding: var(--space-sm);
+  background-color: var(--color-bg-canvas-outer);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-sm);
+  margin-top: var(--space-xs);
+}
+
+.property-input-color {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.property-btn-primary {
+  width: 100%;
+  padding: var(--space-sm);
+  background-color: var(--color-accent-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: bold;
+}
+.property-btn-primary:hover {
+  background-color: var(--color-accent-primary-hover);
+}
+
 .property-panel-content {
   flex: 1;
   padding: var(--space-md);
