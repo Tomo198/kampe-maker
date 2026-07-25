@@ -8,7 +8,8 @@ import { getPixelCrop } from '../../utils/crop'
 
 type Props = {
   element: ImageElement
-  onSelect: () => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onSelect: (e: any) => void
   onChange: (updates: Partial<ImageElement>) => void
   isCropModeActive?: boolean
   onDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void
@@ -54,7 +55,7 @@ export const ImageNode: React.FC<Props> = ({
 
   // If crop is needed
   const cropArgs = React.useMemo(() => {
-    if (!image || !element.crop) return undefined
+    if (!image || !image.naturalWidth || !image.naturalHeight || !element.crop) return undefined
     if (
       element.crop.width === 1 &&
       element.crop.height === 1 &&

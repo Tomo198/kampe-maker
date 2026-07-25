@@ -35,8 +35,6 @@ function AppContent() {
   return <div className="app">{renderScreen(currentScreen)}</div>
 }
 
-
-
 export function App() {
   return (
     <ErrorBoundary>

@@ -35,5 +35,5 @@ export const navigationService = {
 
   cleanup() {
     window.removeEventListener('hashchange', this.handleHashChange)
-  }
+  },
 }

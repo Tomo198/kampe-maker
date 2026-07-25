@@ -22,7 +22,7 @@ export function AssetsTab() {
       }
     }
     return counts
-  }, [project?.elements])
+  }, [project])
 
   if (!project) return null
 

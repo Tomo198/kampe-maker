@@ -5,7 +5,8 @@ import type { TextElement } from '../../models/element'
 
 type Props = {
   element: TextElement
-  onSelect: () => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onSelect: (e: any) => void
   onChange: (updates: Partial<TextElement>) => void
   onDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void
   onDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void

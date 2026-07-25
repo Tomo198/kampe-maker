@@ -78,7 +78,8 @@ export const useProjectStore = create<ProjectState>((set) => ({
   lastSavedRevision: 0,
   setLastSavedRevision: (lastSavedRevision) => set({ lastSavedRevision }),
 
-  initProject: (project, revision = 0) => set({ project, past: [], future: [], projectRevision: revision, lastSavedRevision: revision }),
+  initProject: (project, revision = 0) =>
+    set({ project, past: [], future: [], projectRevision: revision, lastSavedRevision: revision }),
 
   undo: () =>
     set((state) => {

@@ -21,12 +21,20 @@ export function calculateCroppedElement(
   element: ImageElement,
   newCrop: NormalizedCrop,
 ): ImageElement {
-  const fullDisplayWidth = element.width / element.crop.width
-  const fullDisplayHeight = element.height / element.crop.height
+  const currentCrop =
+    element.crop &&
+    typeof element.crop.width === 'number' &&
+    element.crop.width > 0 &&
+    element.crop.height > 0
+      ? element.crop
+      : { x: 0, y: 0, width: 1, height: 1 }
+
+  const fullDisplayWidth = element.width / currentCrop.width
+  const fullDisplayHeight = element.height / currentCrop.height
 
   // Find the top-left coordinate of the "full" uncropped image on the canvas
-  const fullX = element.x - element.crop.x * fullDisplayWidth
-  const fullY = element.y - element.crop.y * fullDisplayHeight
+  const fullX = element.x - currentCrop.x * fullDisplayWidth
+  const fullY = element.y - currentCrop.y * fullDisplayHeight
 
   // Calculate new position and size based on the new crop
   return {

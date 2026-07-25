@@ -8,16 +8,16 @@ import { exportToBlob } from '../export/exportImage'
 let savePromiseChain: Promise<void> = Promise.resolve()
 
 export function useAutoSave() {
-  const projectRevision = useProjectStore(s => s.projectRevision)
-  const lastSavedRevision = useProjectStore(s => s.lastSavedRevision)
-  const setLastSavedRevision = useProjectStore(s => s.setLastSavedRevision)
-  
-  const setSaveStatus = useUIStore(s => s.setSaveStatus)
-  const setLastSavedAt = useUIStore(s => s.setLastSavedAt)
-  
+  const projectRevision = useProjectStore((s) => s.projectRevision)
+  const lastSavedRevision = useProjectStore((s) => s.lastSavedRevision)
+  const setLastSavedRevision = useProjectStore((s) => s.setLastSavedRevision)
+
+  const setSaveStatus = useUIStore((s) => s.setSaveStatus)
+  const setLastSavedAt = useUIStore((s) => s.setLastSavedAt)
+
   const saveTimeoutRef = useRef<number | null>(null)
   const thumbnailTimeoutRef = useRef<number | null>(null)
-  
+
   const triggerImmediateSave = useCallback(() => {
     if (saveTimeoutRef.current) {
       window.clearTimeout(saveTimeoutRef.current)
@@ -27,7 +27,7 @@ export function useAutoSave() {
     const currentProject = useProjectStore.getState().project
     const currentRevision = useProjectStore.getState().projectRevision
     const currentSavedRev = useProjectStore.getState().lastSavedRevision
-    
+
     if (!currentProject || currentRevision <= currentSavedRev) return
 
     setSaveStatus('saving')
@@ -44,12 +44,12 @@ export function useAutoSave() {
           canvas: currentProject.canvas,
           assets: currentProject.assets,
           elements: currentProject.elements,
-          groups: currentProject.groups
+          groups: currentProject.groups,
         }
         await db.projects.put(record)
         setLastSavedRevision(currentRevision)
         setLastSavedAt(record.updatedAt)
-        
+
         // If no new changes happened while saving
         if (useProjectStore.getState().projectRevision === currentRevision) {
           setSaveStatus('saved')
@@ -72,7 +72,7 @@ export function useAutoSave() {
         await db.projectPreviews.put({
           projectId: currentProject.id,
           updatedAt: new Date().toISOString(),
-          blob
+          blob,
         })
       }
     } catch (e) {
@@ -87,11 +87,11 @@ export function useAutoSave() {
         const currentRev = useProjectStore.getState().projectRevision
         const lastRev = useProjectStore.getState().lastSavedRevision
         if (currentRev > lastRev) {
-           triggerImmediateSave()
+          triggerImmediateSave()
         }
       }
     }
-    
+
     // Track beforeunload
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       const status = useUIStore.getState().saveStatus
@@ -103,7 +103,7 @@ export function useAutoSave() {
 
     document.addEventListener('visibilitychange', handleVisibilityChange)
     window.addEventListener('beforeunload', handleBeforeUnload)
-    
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('beforeunload', handleBeforeUnload)
@@ -113,11 +113,11 @@ export function useAutoSave() {
   useEffect(() => {
     if (projectRevision > lastSavedRevision) {
       setSaveStatus('scheduled')
-      
+
       if (saveTimeoutRef.current) {
         window.clearTimeout(saveTimeoutRef.current)
       }
-      
+
       saveTimeoutRef.current = window.setTimeout(() => {
         triggerImmediateSave()
       }, 1000)
@@ -130,9 +130,13 @@ export function useAutoSave() {
         generateAndSaveThumbnail()
       }, 5000)
     }
-  }, [projectRevision, lastSavedRevision, setSaveStatus, triggerImmediateSave, generateAndSaveThumbnail])
+  }, [
+    projectRevision,
+    lastSavedRevision,
+    setSaveStatus,
+    triggerImmediateSave,
+    generateAndSaveThumbnail,
+  ])
 
   return { triggerImmediateSave, generateAndSaveThumbnail }
 }
-
-

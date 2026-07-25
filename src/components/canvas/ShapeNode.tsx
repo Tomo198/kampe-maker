@@ -5,7 +5,8 @@ import type { ShapeElement, BoxShapeElement, LineShapeElement } from '../../mode
 
 type Props = {
   element: ShapeElement
-  onSelect: () => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onSelect: (e: any) => void
   onChange: (updates: Partial<ShapeElement>) => void
   onDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void
   onDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void

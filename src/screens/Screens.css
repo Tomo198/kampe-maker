@@ -47,7 +47,8 @@
   padding-bottom: var(--spacing-xs);
 }
 
-.help-content ul, .help-content ol {
+.help-content ul,
+.help-content ol {
   padding-left: var(--spacing-xl);
   line-height: 1.6;
 }

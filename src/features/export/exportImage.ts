@@ -11,7 +11,10 @@ import type {
 } from '../../models/element'
 import { getPixelCrop } from '../../utils/crop'
 
-export async function renderProjectToCanvas(project: Project, maxEdge?: number): Promise<{ canvas: HTMLCanvasElement, stage: Konva.Stage }> {
+export async function renderProjectToCanvas(
+  project: Project,
+  maxEdge?: number,
+): Promise<{ canvas: HTMLCanvasElement; stage: Konva.Stage }> {
   // Wait for all fonts to load
   await document.fonts.ready
 
@@ -251,7 +254,10 @@ export async function exportToPNG(project: Project): Promise<void> {
   })
 }
 
-export async function exportToBlob(project: Project, options: { maxEdge?: number, mimeType: string }): Promise<Blob> {
+export async function exportToBlob(
+  project: Project,
+  options: { maxEdge?: number; mimeType: string },
+): Promise<Blob> {
   const { canvas, stage } = await renderProjectToCanvas(project, options.maxEdge)
 
   return new Promise<Blob>((resolve, reject) => {

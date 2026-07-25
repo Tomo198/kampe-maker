@@ -13,7 +13,23 @@ export function TopToolbar() {
   const isExporting = useEditorStore((s) => s.isExporting)
   const setIsExporting = useEditorStore((s) => s.setIsExporting)
   const project = useProjectStore((s) => s.project)
+  const past = useProjectStore((s) => s.past)
+  const future = useProjectStore((s) => s.future)
+  const undo = useProjectStore((s) => s.undo)
+  const redo = useProjectStore((s) => s.redo)
+  const cropMode = useEditorStore((s) => s.cropMode)
+  const setCropMode = useEditorStore((s) => s.setCropMode)
   const { triggerImmediateSave } = useAutoSave()
+
+  const handleUndo = () => {
+    if (cropMode) return
+    undo()
+  }
+
+  const handleRedo = () => {
+    if (cropMode) return
+    redo()
+  }
 
   const handleExport = async () => {
     if (!project || isExporting) return
@@ -45,26 +61,109 @@ export function TopToolbar() {
     }
   })()
 
+  const handleApplyCrop = () => {
+    window.dispatchEvent(new CustomEvent('crop-apply'))
+  }
+
+  const handleCancelCrop = () => {
+    setCropMode(null)
+  }
+
   return (
     <header className="top-toolbar" role="toolbar" aria-label="メインツールバー">
       <div className="toolbar-left">
         <button
           className="toolbar-button"
           onClick={() => setScreen('projectList')}
-          aria-label="プロジェクト一覧"
-          title="プロジェクト一覧"
+          aria-label="プロジェクト一覧へ戻る"
+          title="プロジェクト一覧へ戻る"
         >
           ←
         </button>
-        <span className="toolbar-app-name">{APP_DISPLAY_NAME}</span>
+
+        <div
+          className="toolbar-divider"
+          style={{
+            width: '1px',
+            height: '24px',
+            backgroundColor: 'var(--color-border)',
+            margin: '0 8px',
+          }}
+        />
+
+        <button
+          className="toolbar-button"
+          onClick={handleUndo}
+          disabled={!project || past.length === 0 || !!cropMode}
+          aria-label="元に戻す (Ctrl+Z)"
+          title="元に戻す (Ctrl+Z)"
+        >
+          ⤺
+        </button>
+        <button
+          className="toolbar-button"
+          onClick={handleRedo}
+          disabled={!project || future.length === 0 || !!cropMode}
+          aria-label="やり直す (Ctrl+Shift+Z)"
+          title="やり直す (Ctrl+Shift+Z)"
+        >
+          ⤻
+        </button>
+
+        <span className="toolbar-app-name" style={{ marginLeft: '16px' }}>
+          {APP_DISPLAY_NAME}
+        </span>
       </div>
 
       <div className="toolbar-center">
-        <span style={{ fontSize: '0.85rem', color: '#666', marginRight: '16px' }}>{saveStatusLabel}</span>
-        <button className="toolbar-button" onClick={() => triggerImmediateSave()}>
-          保存
-        </button>
-        <span className="toolbar-zoom">{Math.round(zoom * 100)}%</span>
+        {cropMode ? (
+          <>
+            <span
+              style={{
+                fontSize: '0.85rem',
+                color: 'var(--color-text-secondary)',
+                marginRight: '16px',
+                fontWeight: 'bold',
+              }}
+            >
+              トリミング中...
+            </span>
+            <button
+              className="toolbar-button"
+              onClick={handleCancelCrop}
+              style={{
+                borderRadius: '16px',
+                padding: '4px 16px',
+                marginRight: '8px',
+                backgroundColor: 'rgba(50,50,50,0.1)',
+              }}
+            >
+              ✕ キャンセル
+            </button>
+            <button
+              className="toolbar-button"
+              onClick={handleApplyCrop}
+              style={{
+                borderRadius: '16px',
+                padding: '4px 16px',
+                backgroundColor: 'var(--color-primary)',
+                color: 'white',
+              }}
+            >
+              ✓ 適用
+            </button>
+          </>
+        ) : (
+          <>
+            <span style={{ fontSize: '0.85rem', color: '#666', marginRight: '16px' }}>
+              {saveStatusLabel}
+            </span>
+            <button className="toolbar-button" onClick={() => triggerImmediateSave()}>
+              保存
+            </button>
+            <span className="toolbar-zoom">{Math.round(zoom * 100)}%</span>
+          </>
+        )}
       </div>
 
       <div className="toolbar-right">

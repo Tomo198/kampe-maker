@@ -34,7 +34,7 @@ export async function duplicateProject(originalId: string, newName: string): Pro
     const blobKeyMap = new Map<string, string>() // old blob key -> new blob key
 
     // Generate new Asset IDs and Blob Keys
-    const newAssets = original.assets.map(asset => {
+    const newAssets = original.assets.map((asset) => {
       const newAssetId = crypto.randomUUID()
       assetIdMap.set(asset.id, newAssetId)
 
@@ -51,12 +51,12 @@ export async function duplicateProject(originalId: string, newName: string): Pro
         id: newAssetId,
         originalBlobKey: newOriginalKey,
         previewBlobKey: asset.previewBlobKey ? newPreviewKey : '',
-        thumbnailBlobKey: asset.thumbnailBlobKey ? newThumbnailKey : ''
+        thumbnailBlobKey: asset.thumbnailBlobKey ? newThumbnailKey : '',
       }
     })
 
     // Generate new Element IDs and replace references (groupId, assetId)
-    const newElements = original.elements.map(el => {
+    const newElements = original.elements.map((el) => {
       const newElementId = crypto.randomUUID()
       elementIdMap.set(el.id, newElementId)
 
@@ -69,23 +69,23 @@ export async function duplicateProject(originalId: string, newName: string): Pro
     })
 
     // Generate new Group IDs and replace elementIds
-    const newGroups = original.groups.map(g => {
+    const newGroups = original.groups.map((g) => {
       const newGroupId = crypto.randomUUID()
       groupIdMap.set(g.id, newGroupId)
 
       const newElementIds = g.elementIds
-        .map(eid => elementIdMap.get(eid))
+        .map((eid) => elementIdMap.get(eid))
         .filter(Boolean) as string[]
 
       return {
         ...g,
         id: newGroupId,
-        elementIds: newElementIds
+        elementIds: newElementIds,
       }
     })
 
     // Final pass on elements to update groupId
-    newElements.forEach(el => {
+    newElements.forEach((el) => {
       if (el.groupId) {
         const newGroupId = groupIdMap.get(el.groupId)
         if (newGroupId) el.groupId = newGroupId
@@ -106,21 +106,23 @@ export async function duplicateProject(originalId: string, newName: string): Pro
 
     // Duplicate Blobs
     const originalBlobs = await db.blobs.where('projectId').equals(originalId).toArray()
-    const newBlobs = originalBlobs.map(blobRec => {
-      const newKey = blobKeyMap.get(blobRec.key)
-      const newAssetId = assetIdMap.get(blobRec.assetId)
-      
-      // If we somehow didn't map the key, keep the old one (shouldn't happen)
-      if (!newKey || !newAssetId) return null
+    const newBlobs = originalBlobs
+      .map((blobRec) => {
+        const newKey = blobKeyMap.get(blobRec.key)
+        const newAssetId = assetIdMap.get(blobRec.assetId)
 
-      return {
-        ...blobRec,
-        key: newKey,
-        projectId: newProjectId,
-        assetId: newAssetId,
-        createdAt: now
-      }
-    }).filter(Boolean) as typeof originalBlobs
+        // If we somehow didn't map the key, keep the old one (shouldn't happen)
+        if (!newKey || !newAssetId) return null
+
+        return {
+          ...blobRec,
+          key: newKey,
+          projectId: newProjectId,
+          assetId: newAssetId,
+          createdAt: now,
+        }
+      })
+      .filter(Boolean) as typeof originalBlobs
 
     // Save
     await db.projects.put(newProject)
@@ -134,7 +136,7 @@ export async function duplicateProject(originalId: string, newName: string): Pro
       await db.projectPreviews.put({
         projectId: newProjectId,
         updatedAt: now,
-        blob: originalPreview.blob
+        blob: originalPreview.blob,
       })
     }
 

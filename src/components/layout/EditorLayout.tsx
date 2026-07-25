@@ -9,6 +9,7 @@ import { PropertyPanel } from '../properties/PropertyPanel'
 import { CanvasArea } from '../canvas/CanvasArea'
 import { MobileNav } from './MobileNav'
 import { useUIStore } from '../../store/uiStore'
+import { useEditorShortcuts } from '../../features/projects/useEditorShortcuts'
 import './EditorLayout.css'
 
 export function EditorLayout() {
@@ -16,9 +17,12 @@ export function EditorLayout() {
   const propertyPanelOpen = useUIStore((s) => s.propertyPanelOpen)
   const currentProjectId = useUIStore((s) => s.currentProjectId)
   const initProject = useProjectStore((s) => s.initProject)
-  
+
   const { triggerImmediateSave } = useAutoSave()
   const [isLoading, setIsLoading] = useState(true)
+
+  // Initialize editor shortcuts
+  useEditorShortcuts()
 
   useEffect(() => {
     let active = true
@@ -35,18 +39,21 @@ export function EditorLayout() {
         if (!record) throw new Error('Project not found')
 
         if (active) {
-          initProject({
-            id: record.id,
-            name: record.name,
-            createdAt: record.createdAt,
-            updatedAt: record.updatedAt,
-            formatVersion: record.formatVersion || 1,
-            canvas: record.canvas,
-            assets: record.assets || [],
-            elements: record.elements || [],
-            groups: record.groups || []
-          }, 0) // reset revision to 0
-          
+          initProject(
+            {
+              id: record.id,
+              name: record.name,
+              createdAt: record.createdAt,
+              updatedAt: record.updatedAt,
+              formatVersion: record.formatVersion || 1,
+              canvas: record.canvas,
+              assets: record.assets || [],
+              elements: record.elements || [],
+              groups: record.groups || [],
+            },
+            0,
+          ) // reset revision to 0
+
           setIsLoading(false)
         }
       } catch (err) {
@@ -64,7 +71,7 @@ export function EditorLayout() {
     return () => {
       active = false
     }
-  }, [currentProjectId])
+  }, [currentProjectId, initProject, triggerImmediateSave])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -84,7 +91,13 @@ export function EditorLayout() {
   }, [triggerImmediateSave])
 
   if (isLoading) {
-    return <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>読み込み中...</div>
+    return (
+      <div
+        style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}
+      >
+        読み込み中...
+      </div>
+    )
   }
 
   return (

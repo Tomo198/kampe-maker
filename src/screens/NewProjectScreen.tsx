@@ -1,6 +1,11 @@
 import { useState } from 'react'
 import { navigationService } from '../services/navigationService'
-import { CANVAS_PRESETS, CANVAS_MAX_SIZE, CANVAS_MIN_SIZE, DEFAULT_CANVAS_PRESET } from '../constants/canvas'
+import {
+  CANVAS_PRESETS,
+  CANVAS_MAX_SIZE,
+  CANVAS_MIN_SIZE,
+  DEFAULT_CANVAS_PRESET,
+} from '../constants/canvas'
 import { db } from '../db/database'
 import { useProjectStore } from '../store/projectStore'
 import type { ProjectRecord } from '../db/types'
@@ -8,7 +13,7 @@ import './Screens.css'
 
 export function NewProjectScreen() {
   const initProject = useProjectStore((s) => s.initProject)
-  
+
   const [name, setName] = useState('')
   const [presetLabel, setPresetLabel] = useState(DEFAULT_CANVAS_PRESET.label)
   const [width, setWidth] = useState(DEFAULT_CANVAS_PRESET.width.toString())
@@ -22,7 +27,7 @@ export function NewProjectScreen() {
     const label = e.target.value
     setPresetLabel(label)
     if (label !== 'custom') {
-      const preset = CANVAS_PRESETS.find(p => p.label === label)
+      const preset = CANVAS_PRESETS.find((p) => p.label === label)
       if (preset) {
         setWidth(preset.width.toString())
         setHeight(preset.height.toString())
@@ -74,7 +79,7 @@ export function NewProjectScreen() {
         },
         assets: [],
         elements: [],
-        groups: []
+        groups: [],
       }
 
       await db.projects.put(newProject)
@@ -95,7 +100,11 @@ export function NewProjectScreen() {
     <div className="screen-container">
       <div className="screen-header">
         <h1>新規プロジェクト作成</h1>
-        <button className="button-secondary" onClick={() => window.history.back()} disabled={isSubmitting}>
+        <button
+          className="button-secondary"
+          onClick={() => window.history.back()}
+          disabled={isSubmitting}
+        >
           キャンセル
         </button>
       </div>
@@ -103,7 +112,15 @@ export function NewProjectScreen() {
       <div className="screen-content">
         <form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto' }}>
           {error && (
-            <div style={{ backgroundColor: '#fee', color: '#c00', padding: '10px', borderRadius: '4px', marginBottom: '20px' }}>
+            <div
+              style={{
+                backgroundColor: '#fee',
+                color: '#c00',
+                padding: '10px',
+                borderRadius: '4px',
+                marginBottom: '20px',
+              }}
+            >
               {error}
             </div>
           )}
@@ -115,7 +132,7 @@ export function NewProjectScreen() {
               type="text"
               className="form-input"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               placeholder="無題のカンペ"
               maxLength={100}
             />
@@ -129,8 +146,10 @@ export function NewProjectScreen() {
               value={presetLabel}
               onChange={handlePresetChange}
             >
-              {CANVAS_PRESETS.map(p => (
-                <option key={p.label} value={p.label}>{p.label} ({p.width} × {p.height})</option>
+              {CANVAS_PRESETS.map((p) => (
+                <option key={p.label} value={p.label}>
+                  {p.label} ({p.width} × {p.height})
+                </option>
               ))}
               <option value="custom">カスタムサイズ</option>
             </select>
@@ -144,7 +163,7 @@ export function NewProjectScreen() {
                 type="number"
                 className="form-input"
                 value={width}
-                onChange={e => {
+                onChange={(e) => {
                   setWidth(e.target.value)
                   setPresetLabel('custom')
                 }}
@@ -156,7 +175,7 @@ export function NewProjectScreen() {
                 type="number"
                 className="form-input"
                 value={height}
-                onChange={e => {
+                onChange={(e) => {
                   setHeight(e.target.value)
                   setPresetLabel('custom')
                 }}
@@ -173,13 +192,21 @@ export function NewProjectScreen() {
                 id="bgColor"
                 type="color"
                 value={backgroundColor}
-                onChange={e => setBackgroundColor(e.target.value)}
+                onChange={(e) => setBackgroundColor(e.target.value)}
               />
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'normal', margin: 0 }}>
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontWeight: 'normal',
+                  margin: 0,
+                }}
+              >
                 <input
                   type="checkbox"
                   checked={transparent}
-                  onChange={e => setTransparent(e.target.checked)}
+                  onChange={(e) => setTransparent(e.target.checked)}
                 />
                 透明な背景（PNG書き出し時のみ）
               </label>

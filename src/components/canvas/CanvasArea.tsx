@@ -11,6 +11,7 @@ import { TransformerUI } from './TransformerUI'
 import { CropUI } from './CropUI'
 import type { CanvasElement, ImageElement } from '../../models/element'
 import { calculateSnap } from '../../utils/snapping'
+import { handleNodeSelect } from '../../features/projects/selectionHandler'
 
 export const CanvasArea: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -48,6 +49,7 @@ export const CanvasArea: React.FC = () => {
     setPan,
     selectedElements: selectedRefs,
     setSelectedElements,
+    editingGroupId,
     cropMode,
   } = useEditorStore()
 
@@ -94,7 +96,7 @@ export const CanvasArea: React.FC = () => {
     })
 
     setSelectedNodes(nodes)
-  }, [selectedRefs, project?.elements])
+  }, [selectedRefs, project])
 
   // Keyboard events
   useEffect(() => {
@@ -170,7 +172,8 @@ export const CanvasArea: React.FC = () => {
     }
   }
 
-  const handleStageMouseDown = (e: Konva.KonvaEventObject<MouseEvent>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleStageMouseDown = (e: any) => {
     if (cropMode || isSpacePressed) return
     const clickedOnEmpty = e.target === e.target.getStage() || e.target.name() === 'background'
     if (clickedOnEmpty) {
@@ -179,13 +182,28 @@ export const CanvasArea: React.FC = () => {
         selectionStartPos.current = pos
         setSelectionRect({ x: pos.x, y: pos.y, width: 0, height: 0 })
       }
-      if (!isShiftPressed) {
+      if (!e.evt.shiftKey) {
         setSelectedElements([])
       }
     }
   }
 
-  const handleStageMouseMove = (e: Konva.KonvaEventObject<MouseEvent>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleNodeClick = (e: any, elementId: string) => {
+    if (cropMode) return
+    e.cancelBubble = true // Prevent stage click
+    handleNodeSelect(
+      elementId,
+      e.evt.shiftKey,
+      project.elements,
+      selectedRefs,
+      editingGroupId,
+      setSelectedElements,
+    )
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleStageMouseMove = (e: any) => {
     if (selectionStartPos.current && selectionRect) {
       const pos = e.target.getStage()?.getRelativePointerPosition()
       if (pos) {
@@ -396,6 +414,7 @@ export const CanvasArea: React.FC = () => {
         height: '100%',
         backgroundColor: 'var(--color-bg-canvas-outer)',
         overflow: 'hidden',
+        position: 'relative',
       }}
     >
       <Stage
@@ -417,22 +436,31 @@ export const CanvasArea: React.FC = () => {
           }
         }}
         onMouseDown={handleStageMouseDown}
+        onTouchStart={handleStageMouseDown}
         onMouseMove={handleStageMouseMove}
+        onTouchMove={handleStageMouseMove}
         onMouseUp={handleStageMouseUp}
+        onTouchEnd={handleStageMouseUp}
       >
         <Layer ref={layerRef}>
           <Group x={pan.x} y={pan.y} scaleX={zoom} scaleY={zoom}>
-            {!project.canvas.transparent && (
-              <Rect
-                name="background"
-                x={0}
-                y={0}
-                width={project.canvas.width}
-                height={project.canvas.height}
-                fill={project.canvas.backgroundColor}
-                listening={true}
-              />
-            )}
+            {/* Outline for the Canvas bounds */}
+            <Rect
+              x={0}
+              y={0}
+              width={project.canvas.width}
+              height={project.canvas.height}
+              fill={project.canvas.transparent ? 'transparent' : project.canvas.backgroundColor}
+              shadowColor="black"
+              shadowBlur={20}
+              shadowOpacity={0.2}
+              shadowOffsetX={0}
+              shadowOffsetY={8}
+              stroke="rgba(0,0,0,0.1)"
+              strokeWidth={1 / zoom}
+              listening={!project.canvas.transparent}
+              name="background"
+            />
 
             {project.elements.map((el) => {
               if (!el.visible) return null
@@ -443,7 +471,7 @@ export const CanvasArea: React.FC = () => {
                   <ImageNode
                     key={el.id}
                     element={el as ImageElement}
-                    onSelect={() => {}}
+                    onSelect={(e) => handleNodeClick(e, el.id)}
                     onChange={() => {}}
                     isCropModeActive={!!cropMode}
                     onDragStart={handleDragStart}
@@ -456,7 +484,7 @@ export const CanvasArea: React.FC = () => {
                   <ShapeNode
                     key={el.id}
                     element={el as import('../../models/element').ShapeElement}
-                    onSelect={() => {}}
+                    onSelect={(e) => handleNodeClick(e, el.id)}
                     onChange={() => {}}
                     onDragStart={handleDragStart}
                     onDragMove={handleDragMove}
@@ -468,7 +496,7 @@ export const CanvasArea: React.FC = () => {
                   <TextNode
                     key={el.id}
                     element={el as import('../../models/element').TextElement}
-                    onSelect={() => {}}
+                    onSelect={(e) => handleNodeClick(e, el.id)}
                     onChange={() => {}}
                     onDragStart={handleDragStart}
                     onDragMove={handleDragMove}
@@ -480,7 +508,7 @@ export const CanvasArea: React.FC = () => {
                   <StampNode
                     key={el.id}
                     element={el as import('../../models/element').StampElement}
-                    onSelect={() => {}}
+                    onSelect={(e) => handleNodeClick(e, el.id)}
                     onChange={() => {}}
                     onDragStart={handleDragStart}
                     onDragMove={handleDragMove}
@@ -531,6 +559,20 @@ export const CanvasArea: React.FC = () => {
           </Group>
         </Layer>
       </Stage>
+
+      {/* DOM Overlay Root for Crop UI */}
+      <div
+        id="crop-overlay-root"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: 10,
+        }}
+      />
     </div>
   )
 }

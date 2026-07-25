@@ -34,9 +34,9 @@ export function ProjectListScreen() {
     loadProjects()
     return () => {
       // Cleanup object URLs
-      Object.values(previews).forEach(url => URL.revokeObjectURL(url))
+      Object.values(previews).forEach((url) => URL.revokeObjectURL(url))
     }
-  }, []) // Cannot put previews in dependency array, so we just clean up current values. Better to use a ref or cleanup on unmount only.
+  }, [previews])
 
   const handleCreateNew = () => {
     navigationService.navigate('/projects/new')
@@ -76,7 +76,11 @@ export function ProjectListScreen() {
       <div className="screen-header">
         <h1>{APP_DISPLAY_NAME}</h1>
         <div>
-          <button className="button-secondary" onClick={() => navigationService.navigate('/help')} style={{ marginRight: '16px' }}>
+          <button
+            className="button-secondary"
+            onClick={() => navigationService.navigate('/help')}
+            style={{ marginRight: '16px' }}
+          >
             ヘルプ
           </button>
           <button className="button-primary" onClick={handleCreateNew}>
@@ -93,32 +97,92 @@ export function ProjectListScreen() {
             <p>プロジェクトがありません。「新規プロジェクト」から作成してください。</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
-            {projects.map(p => (
-              <div key={p.id} style={{ border: '1px solid var(--color-border)', borderRadius: '8px', overflow: 'hidden', backgroundColor: 'var(--color-surface)', display: 'flex', flexDirection: 'column' }}>
-                <div 
-                  style={{ height: '160px', backgroundColor: '#e0e0e0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '24px',
+            }}
+          >
+            {projects.map((p) => (
+              <div
+                key={p.id}
+                style={{
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  backgroundColor: 'var(--color-surface)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <div
+                  style={{
+                    height: '160px',
+                    backgroundColor: '#e0e0e0',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
                   onClick={() => handleOpen(p.id)}
                 >
                   {previews[p.id] ? (
-                    <img src={previews[p.id]} alt="サムネイル" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    <img
+                      src={previews[p.id]}
+                      alt="サムネイル"
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    />
                   ) : (
                     <span style={{ color: '#888' }}>No Image</span>
                   )}
                 </div>
                 <div style={{ padding: '16px' }}>
-                  <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem', cursor: 'pointer' }} onClick={() => handleOpen(p.id)}>
+                  <h3
+                    style={{ margin: '0 0 8px 0', fontSize: '1.1rem', cursor: 'pointer' }}
+                    onClick={() => handleOpen(p.id)}
+                  >
                     {p.name}
                   </h3>
                   <p style={{ margin: '0 0 16px 0', fontSize: '0.85rem', color: '#666' }}>
-                    更新: {new Date(p.updatedAt).toLocaleString()}<br/>
+                    更新: {new Date(p.updatedAt).toLocaleString()}
+                    <br />
                     サイズ: {p.canvas.width} × {p.canvas.height}
                   </p>
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    <button className="button-secondary" style={{ padding: '4px 8px', fontSize: '0.85rem' }} onClick={() => handleRename(p.id, p.name)}>名前変更</button>
-                    <button className="button-secondary" style={{ padding: '4px 8px', fontSize: '0.85rem' }} onClick={() => handleDuplicate(p.id, p.name)}>複製</button>
-                    <button className="button-secondary" style={{ padding: '4px 8px', fontSize: '0.85rem' }} onClick={() => alert('.kampe書き出しは未実装')}>書き出し</button>
-                    <button className="button-secondary" style={{ padding: '4px 8px', fontSize: '0.85rem', color: '#d32f2f', borderColor: '#d32f2f' }} onClick={() => handleDelete(p.id, p.name)}>削除</button>
+                    <button
+                      className="button-secondary"
+                      style={{ padding: '4px 8px', fontSize: '0.85rem' }}
+                      onClick={() => handleRename(p.id, p.name)}
+                    >
+                      名前変更
+                    </button>
+                    <button
+                      className="button-secondary"
+                      style={{ padding: '4px 8px', fontSize: '0.85rem' }}
+                      onClick={() => handleDuplicate(p.id, p.name)}
+                    >
+                      複製
+                    </button>
+                    <button
+                      className="button-secondary"
+                      style={{ padding: '4px 8px', fontSize: '0.85rem' }}
+                      onClick={() => alert('.kampe書き出しは未実装')}
+                    >
+                      書き出し
+                    </button>
+                    <button
+                      className="button-secondary"
+                      style={{
+                        padding: '4px 8px',
+                        fontSize: '0.85rem',
+                        color: '#d32f2f',
+                        borderColor: '#d32f2f',
+                      }}
+                      onClick={() => handleDelete(p.id, p.name)}
+                    >
+                      削除
+                    </button>
                   </div>
                 </div>
               </div>

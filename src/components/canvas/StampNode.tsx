@@ -5,7 +5,8 @@ import type { StampElement } from '../../models/element'
 
 type Props = {
   element: StampElement
-  onSelect: () => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onSelect: (e: any) => void
   onChange: (updates: Partial<StampElement>) => void
   onDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void
   onDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void
