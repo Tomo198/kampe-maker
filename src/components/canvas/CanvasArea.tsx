@@ -57,6 +57,12 @@ export const CanvasArea: React.FC = () => {
     setViewportManuallyAdjusted,
   } = useEditorStore()
 
+  // Convert stage-space coordinates to canvas-space (inside the zoom/pan Group)
+  const stageToCanvas = (stagePos: { x: number; y: number }) => ({
+    x: (stagePos.x - pan.x) / zoom,
+    y: (stagePos.y - pan.y) / zoom,
+  })
+
   // Touch Gestures
   const { isPinching, onTouchStart, onTouchMove, onTouchEnd } = useStageGestures(
     zoom,
@@ -82,6 +88,12 @@ export const CanvasArea: React.FC = () => {
     return () => observer.disconnect()
   }, [])
 
+  // Reset viewportManuallyAdjusted when project changes (new project loaded)
+  const projectId = project?.id
+  useEffect(() => {
+    setViewportManuallyAdjusted(false)
+  }, [projectId, setViewportManuallyAdjusted])
+
   // Auto-Fit on size changes or when not manually adjusted
   useEffect(() => {
     if (!project || dimensions.width === 0 || dimensions.height === 0) return
@@ -95,7 +107,17 @@ export const CanvasArea: React.FC = () => {
       setZoom(fit.zoom)
       setPan(fit.pan)
     }
-  }, [dimensions, project, viewportManuallyAdjusted, setZoom, setPan])
+    // Only re-run when dimensions or canvas size change, not on every project mutation
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    dimensions,
+    projectId,
+    project?.canvas.width,
+    project?.canvas.height,
+    viewportManuallyAdjusted,
+    setZoom,
+    setPan,
+  ])
 
   // Explicit Auto-Fit event from toolbar
   useEffect(() => {
@@ -225,10 +247,11 @@ export const CanvasArea: React.FC = () => {
     if (cropMode || isSpacePressed || isPinching) return
     const clickedOnEmpty = e.target === e.target.getStage() || e.target.name() === 'background'
     if (clickedOnEmpty) {
-      const pos = e.target.getStage()?.getRelativePointerPosition()
-      if (pos) {
-        selectionStartPos.current = pos
-        setSelectionRect({ x: pos.x, y: pos.y, width: 0, height: 0 })
+      const stagePos = e.target.getStage()?.getRelativePointerPosition()
+      if (stagePos) {
+        const canvasPos = stageToCanvas(stagePos)
+        selectionStartPos.current = canvasPos
+        setSelectionRect({ x: canvasPos.x, y: canvasPos.y, width: 0, height: 0 })
       }
       if (!e.evt.shiftKey) {
         setSelectedElements([])
@@ -254,13 +277,14 @@ export const CanvasArea: React.FC = () => {
   const handleStageMouseMove = (e: any) => {
     if (isPinching) return
     if (selectionStartPos.current && selectionRect) {
-      const pos = e.target.getStage()?.getRelativePointerPosition()
-      if (pos) {
+      const stagePos = e.target.getStage()?.getRelativePointerPosition()
+      if (stagePos) {
+        const canvasPos = stageToCanvas(stagePos)
         setSelectionRect({
-          x: Math.min(selectionStartPos.current.x, pos.x),
-          y: Math.min(selectionStartPos.current.y, pos.y),
-          width: Math.abs(pos.x - selectionStartPos.current.x),
-          height: Math.abs(pos.y - selectionStartPos.current.y),
+          x: Math.min(selectionStartPos.current.x, canvasPos.x),
+          y: Math.min(selectionStartPos.current.y, canvasPos.y),
+          width: Math.abs(canvasPos.x - selectionStartPos.current.x),
+          height: Math.abs(canvasPos.y - selectionStartPos.current.y),
         })
       }
     }
