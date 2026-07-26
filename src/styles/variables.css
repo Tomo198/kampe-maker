@@ -1,53 +1,72 @@
 :root {
-  /* Colors - Dark theme */
-  --color-bg-primary: #1a1a2e;
-  --color-bg-secondary: #16213e;
-  --color-bg-surface: #1e2a45;
-  --color-bg-hover: #253559;
-  --color-bg-canvas-outer: #2a2a3e;
+  /* Dynamic Rich Theme Colors */
+  --color-bg-primary: #0f0f1a;
+  --color-bg-secondary: #151528;
+  --color-bg-surface: #1e1e38;
+  --color-bg-surface-glass: rgba(30, 30, 56, 0.65);
+  --color-bg-hover: rgba(108, 99, 255, 0.12);
+  --color-bg-active: rgba(108, 99, 255, 0.22);
+  --color-bg-canvas-outer: #0b0b12;
   --color-bg-canvas: #ffffff;
 
-  --color-text-primary: #e0e0f0;
-  --color-text-secondary: #a0a0c0;
-  --color-text-muted: #707090;
+  --color-text-primary: #f0f0ff;
+  --color-text-secondary: #a3a3c2;
+  --color-text-muted: #6a6a8c;
 
+  /* Accent Gradients and Palette */
   --color-accent-primary: #6c63ff;
-  --color-accent-primary-hover: #7b73ff;
-  --color-accent-success: #3dd68c;
-  --color-accent-warning: #ffb74d;
-  --color-accent-danger: #ff5252;
-  --color-accent-info: #40c4ff;
+  --color-accent-primary-hover: #7d75ff;
+  --color-accent-secondary: #00d2ff;
+  --gradient-accent: linear-gradient(135deg, #6c63ff 0%, #00d2ff 100%);
+  --gradient-card: linear-gradient(145deg, rgba(35, 35, 65, 0.6) 0%, rgba(20, 20, 40, 0.8) 100%);
+  --gradient-button: linear-gradient(135deg, #6c63ff 0%, #5a52e0 100%);
 
-  --color-border: #2e3a5a;
-  --color-border-light: #3a4a6a;
+  --color-accent-success: #10b981;
+  --color-accent-warning: #f59e0b;
+  --color-accent-danger: #ef4444;
+  --color-accent-info: #3b82f6;
 
-  /* Spacing */
+  /* Borders & Dividers */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-hover: rgba(108, 99, 255, 0.4);
+  --color-border-light: rgba(255, 255, 255, 0.12);
+
+  /* Spacing Tokens */
+  --space-2xs: 2px;
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 12px;
   --space-lg: 16px;
   --space-xl: 24px;
   --space-2xl: 32px;
+  --space-3xl: 48px;
 
-  /* Layout sizes */
-  --toolbar-height: 48px;
-  --sidebar-width: 280px;
-  --property-panel-width: 280px;
-  --mobile-nav-height: 56px;
+  /* Layout dimensions */
+  --toolbar-height: 52px;
+  --sidebar-width: 290px;
+  --property-panel-width: 290px;
+  --mobile-nav-height: 60px;
 
-  /* Border radius */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  /* Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
 
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
+  /* Micro-animation transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  /* Rich Shadows & Glows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(108, 99, 255, 0.35);
+
+  /* Glassmorphism Backdrop Filter */
+  --backdrop-blur: blur(16px);
 
   /* Z-index layers */
   --z-canvas: 1;

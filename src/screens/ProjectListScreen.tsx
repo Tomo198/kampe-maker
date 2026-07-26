@@ -73,28 +73,34 @@ export function ProjectListScreen() {
 
   return (
     <div className="screen-container">
-      <div className="screen-header">
+      <header className="screen-header">
         <h1>{APP_DISPLAY_NAME}</h1>
-        <div>
-          <button
-            className="button-secondary"
-            onClick={() => navigationService.navigate('/help')}
-            style={{ marginRight: '16px' }}
-          >
-            ヘルプ
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <button className="button-secondary" onClick={() => navigationService.navigate('/help')}>
+            ❓ ヘルプ
           </button>
           <button className="button-primary" onClick={handleCreateNew}>
-            ＋ 新規プロジェクト
+            ✨ 新規プロジェクト
           </button>
         </div>
-      </div>
+      </header>
 
-      <div className="screen-content">
+      <main className="screen-content">
         {isLoading ? (
-          <p>読み込み中...</p>
+          <div className="empty-state">
+            <p>読み込み中...</p>
+          </div>
         ) : projects.length === 0 ? (
-          <div style={{ textAlign: 'center', marginTop: '40px' }}>
-            <p>プロジェクトがありません。「新規プロジェクト」から作成してください。</p>
+          <div className="empty-state">
+            <div className="empty-state-icon">🎨</div>
+            <p>
+              まだプロジェクトがありません。
+              <br />
+              「新規プロジェクト」からカンペを作成しましょう！
+            </p>
+            <button className="button-primary" onClick={handleCreateNew}>
+              ✨ 新規プロジェクトを作成
+            </button>
           </div>
         ) : (
           <div
@@ -105,83 +111,64 @@ export function ProjectListScreen() {
             }}
           >
             {projects.map((p) => (
-              <div
-                key={p.id}
-                style={{
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  backgroundColor: 'var(--color-surface)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
+              <div key={p.id} className="project-card">
                 <div
-                  style={{
-                    height: '160px',
-                    backgroundColor: '#e0e0e0',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
+                  className="project-card-thumbnail"
                   onClick={() => handleOpen(p.id)}
+                  title="クリックして開く"
                 >
                   {previews[p.id] ? (
-                    <img
-                      src={previews[p.id]}
-                      alt="サムネイル"
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
+                    <img src={previews[p.id]} alt="サムネイル" />
                   ) : (
-                    <span style={{ color: '#888' }}>No Image</span>
+                    <div className="project-card-no-image">🖼️ 画像なし</div>
                   )}
                 </div>
-                <div style={{ padding: '16px' }}>
+                <div className="project-card-info">
                   <h3
-                    style={{ margin: '0 0 8px 0', fontSize: '1.1rem', cursor: 'pointer' }}
+                    className="project-card-title"
                     onClick={() => handleOpen(p.id)}
+                    title={p.name}
                   >
                     {p.name}
                   </h3>
-                  <p style={{ margin: '0 0 16px 0', fontSize: '0.85rem', color: '#666' }}>
-                    更新: {new Date(p.updatedAt).toLocaleString()}
-                    <br />
-                    サイズ: {p.canvas.width} × {p.canvas.height}
-                  </p>
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <div className="project-card-meta">
+                    <div>
+                      📅 更新:{' '}
+                      {new Date(p.updatedAt).toLocaleString('ja-JP', {
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </div>
+                    <div>
+                      📐 サイズ: {p.canvas.width} × {p.canvas.height} px
+                    </div>
+                  </div>
+                  <div className="project-card-actions">
                     <button
                       className="button-secondary"
-                      style={{ padding: '4px 8px', fontSize: '0.85rem' }}
+                      style={{ padding: '4px 8px', fontSize: '0.8rem' }}
                       onClick={() => handleRename(p.id, p.name)}
                     >
-                      名前変更
+                      ✏️ 名前変更
                     </button>
                     <button
                       className="button-secondary"
-                      style={{ padding: '4px 8px', fontSize: '0.85rem' }}
+                      style={{ padding: '4px 8px', fontSize: '0.8rem' }}
                       onClick={() => handleDuplicate(p.id, p.name)}
                     >
-                      複製
+                      📋 複製
                     </button>
                     <button
                       className="button-secondary"
-                      style={{ padding: '4px 8px', fontSize: '0.85rem' }}
+                      style={{ padding: '4px 8px', fontSize: '0.8rem' }}
                       onClick={() => alert('.kampe書き出しは未実装')}
                     >
-                      書き出し
+                      📦 書き出し
                     </button>
-                    <button
-                      className="button-secondary"
-                      style={{
-                        padding: '4px 8px',
-                        fontSize: '0.85rem',
-                        color: '#d32f2f',
-                        borderColor: '#d32f2f',
-                      }}
-                      onClick={() => handleDelete(p.id, p.name)}
-                    >
-                      削除
+                    <button className="button-danger" onClick={() => handleDelete(p.id, p.name)}>
+                      🗑️ 削除
                     </button>
                   </div>
                 </div>
@@ -189,7 +176,7 @@ export function ProjectListScreen() {
             ))}
           </div>
         )}
-      </div>
+      </main>
     </div>
   )
 }

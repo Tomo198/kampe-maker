@@ -1,8 +1,6 @@
 @import './variables.css';
 
-/* Fontsource is imported in main.tsx */
-
-/* Reset */
+/* Reset & Normalize */
 *,
 *::before,
 *::after {
@@ -14,13 +12,15 @@
 html {
   height: 100%;
   -webkit-text-size-adjust: 100%;
+  font-feature-settings: 'palt' 1;
 }
 
 body {
   height: 100%;
   font-family:
-    system-ui,
+    'Inter',
     -apple-system,
+    BlinkMacSystemFont,
     'Segoe UI',
     'Hiragino Sans',
     'Noto Sans JP',
@@ -30,14 +30,11 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
-#root,
-.app {
+#root {
   height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 button {
@@ -46,6 +43,16 @@ button {
   background: none;
   font: inherit;
   color: inherit;
+  outline: none;
+  user-select: none;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: 2px;
 }
 
 img {
@@ -53,23 +60,23 @@ img {
   max-width: 100%;
 }
 
-/* Scrollbar styling */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border-light);
-  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Utility: visually hidden but accessible */

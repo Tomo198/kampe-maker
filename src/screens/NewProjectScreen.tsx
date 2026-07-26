@@ -35,6 +35,12 @@ export function NewProjectScreen() {
     }
   }
 
+  const selectPresetDirectly = (label: string, w: number, h: number) => {
+    setPresetLabel(label)
+    setWidth(w.toString())
+    setHeight(h.toString())
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
@@ -98,7 +104,7 @@ export function NewProjectScreen() {
 
   return (
     <div className="screen-container">
-      <div className="screen-header">
+      <header className="screen-header">
         <h1>新規プロジェクト作成</h1>
         <button
           className="button-secondary"
@@ -107,119 +113,164 @@ export function NewProjectScreen() {
         >
           キャンセル
         </button>
-      </div>
+      </header>
 
-      <div className="screen-content">
-        <form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto' }}>
-          {error && (
-            <div
-              style={{
-                backgroundColor: '#fee',
-                color: '#c00',
-                padding: '10px',
-                borderRadius: '4px',
-                marginBottom: '20px',
-              }}
-            >
-              {error}
-            </div>
-          )}
-
-          <div className="form-group">
-            <label htmlFor="projectName">プロジェクト名</label>
-            <input
-              id="projectName"
-              type="text"
-              className="form-input"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="無題のカンペ"
-              maxLength={100}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="canvasPreset">キャンバスサイズ (プリセット)</label>
-            <select
-              id="canvasPreset"
-              className="form-select"
-              value={presetLabel}
-              onChange={handlePresetChange}
-            >
-              {CANVAS_PRESETS.map((p) => (
-                <option key={p.label} value={p.label}>
-                  {p.label} ({p.width} × {p.height})
-                </option>
-              ))}
-              <option value="custom">カスタムサイズ</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>カスタムサイズ (px)</label>
-            <div className="form-row">
-              <label>幅</label>
-              <input
-                type="number"
-                className="form-input"
-                value={width}
-                onChange={(e) => {
-                  setWidth(e.target.value)
-                  setPresetLabel('custom')
-                }}
-                min={CANVAS_MIN_SIZE}
-                max={CANVAS_MAX_SIZE}
-              />
-              <label>高さ</label>
-              <input
-                type="number"
-                className="form-input"
-                value={height}
-                onChange={(e) => {
-                  setHeight(e.target.value)
-                  setPresetLabel('custom')
-                }}
-                min={CANVAS_MIN_SIZE}
-                max={CANVAS_MAX_SIZE}
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="bgColor">背景色</label>
-            <div className="form-row">
-              <input
-                id="bgColor"
-                type="color"
-                value={backgroundColor}
-                onChange={(e) => setBackgroundColor(e.target.value)}
-              />
-              <label
+      <main className="screen-content">
+        <div className="form-card">
+          <form onSubmit={handleSubmit}>
+            {error && (
+              <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  fontWeight: 'normal',
-                  margin: 0,
+                  backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                  color: 'var(--color-accent-danger)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  padding: '12px 16px',
+                  borderRadius: 'var(--radius-sm)',
+                  marginBottom: '24px',
+                  fontSize: '0.9rem',
                 }}
               >
-                <input
-                  type="checkbox"
-                  checked={transparent}
-                  onChange={(e) => setTransparent(e.target.checked)}
-                />
-                透明な背景（PNG書き出し時のみ）
-              </label>
-            </div>
-          </div>
+                ⚠️ {error}
+              </div>
+            )}
 
-          <div style={{ marginTop: '40px', textAlign: 'right' }}>
-            <button type="submit" className="button-primary" disabled={isSubmitting}>
-              {isSubmitting ? '作成中...' : 'キャンバスを作成'}
-            </button>
-          </div>
-        </form>
-      </div>
+            <div className="form-group">
+              <label htmlFor="projectName">プロジェクト名</label>
+              <input
+                id="projectName"
+                type="text"
+                className="form-input"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="無題のカンペ"
+                maxLength={100}
+                autoFocus
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="canvasPreset">キャンバスサイズ (プリセット)</label>
+              <div className="preset-grid" style={{ marginBottom: '12px' }}>
+                {CANVAS_PRESETS.map((p) => (
+                  <button
+                    key={p.label}
+                    type="button"
+                    className={`preset-chip ${presetLabel === p.label ? 'preset-chip--active' : ''}`}
+                    onClick={() => selectPresetDirectly(p.label, p.width, p.height)}
+                  >
+                    <div>{p.label}</div>
+                    <div style={{ fontSize: '0.725rem', opacity: 0.8 }}>
+                      {p.width} × {p.height}
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <select
+                id="canvasPreset"
+                className="form-select"
+                value={presetLabel}
+                onChange={handlePresetChange}
+              >
+                {CANVAS_PRESETS.map((p) => (
+                  <option key={p.label} value={p.label}>
+                    {p.label} ({p.width} × {p.height})
+                  </option>
+                ))}
+                <option value="custom">カスタムサイズ指定</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>カスタムサイズ (px)</label>
+              <div className="form-row">
+                <label
+                  style={{ margin: 0, fontWeight: 'normal', color: 'var(--color-text-secondary)' }}
+                >
+                  幅
+                </label>
+                <input
+                  type="number"
+                  className="form-input"
+                  value={width}
+                  onChange={(e) => {
+                    setWidth(e.target.value)
+                    setPresetLabel('custom')
+                  }}
+                  min={CANVAS_MIN_SIZE}
+                  max={CANVAS_MAX_SIZE}
+                />
+                <label
+                  style={{ margin: 0, fontWeight: 'normal', color: 'var(--color-text-secondary)' }}
+                >
+                  高さ
+                </label>
+                <input
+                  type="number"
+                  className="form-input"
+                  value={height}
+                  onChange={(e) => {
+                    setHeight(e.target.value)
+                    setPresetLabel('custom')
+                  }}
+                  min={CANVAS_MIN_SIZE}
+                  max={CANVAS_MAX_SIZE}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="bgColor">背景設定</label>
+              <div className="color-picker-wrapper">
+                <input
+                  id="bgColor"
+                  type="color"
+                  value={backgroundColor}
+                  onChange={(e) => setBackgroundColor(e.target.value)}
+                  title="背景色を選択"
+                />
+                <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
+                  {backgroundColor}
+                </span>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontWeight: 'normal',
+                    fontSize: '0.9rem',
+                    margin: 0,
+                    cursor: 'pointer',
+                    marginLeft: 'auto',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={transparent}
+                    onChange={(e) => setTransparent(e.target.checked)}
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      accentColor: 'var(--color-accent-primary)',
+                    }}
+                  />
+                  透明な背景 (PNG出力時)
+                </label>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '36px', textAlign: 'right' }}>
+              <button
+                type="submit"
+                className="button-primary"
+                style={{ padding: '10px 24px', fontSize: '1rem' }}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? '作成中...' : '🚀 キャンバスを作成'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
   )
 }
