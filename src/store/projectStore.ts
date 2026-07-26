@@ -50,12 +50,24 @@ type ProjectState = {
 
 const commitProjectUpdate = (state: ProjectState, newProject: Project): Partial<ProjectState> => {
   if (!state.project) return {}
+  if (state.project === newProject) return {} // Fast path: identical reference
 
-  // Check if anything actually changed (ignoring updatedAt)
+  // Fast path: check if array references and canvas settings are untouched
+  if (
+    state.project.name === newProject.name &&
+    state.project.canvas === newProject.canvas &&
+    state.project.elements === newProject.elements &&
+    state.project.assets === newProject.assets &&
+    state.project.groups === newProject.groups
+  ) {
+    return {}
+  }
+
+  // Deep comparison ignoring updatedAt when references differ
   const currentData = { ...state.project, updatedAt: '' }
   const newData = { ...newProject, updatedAt: '' }
   if (JSON.stringify(currentData) === JSON.stringify(newData)) {
-    return {} // No change
+    return {} // No structural change
   }
 
   const newPast = [...state.past, state.project]

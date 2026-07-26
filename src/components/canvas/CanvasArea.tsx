@@ -242,8 +242,7 @@ export const CanvasArea: React.FC = () => {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleStageMouseDown = (e: any) => {
+  const handleStageMouseDown = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
     if (cropMode || isSpacePressed || isPinching) return
     const clickedOnEmpty = e.target === e.target.getStage() || e.target.name() === 'background'
     if (clickedOnEmpty) {
@@ -259,8 +258,10 @@ export const CanvasArea: React.FC = () => {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleNodeClick = (e: any, elementId: string) => {
+  const handleNodeClick = (
+    e: Konva.KonvaEventObject<MouseEvent | TouchEvent>,
+    elementId: string,
+  ) => {
     if (cropMode) return
     e.cancelBubble = true // Prevent stage click
     handleNodeSelect(
@@ -273,8 +274,7 @@ export const CanvasArea: React.FC = () => {
     )
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleStageMouseMove = (e: any) => {
+  const handleStageMouseMove = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
     if (isPinching) return
     if (selectionStartPos.current && selectionRect) {
       const stagePos = e.target.getStage()?.getRelativePointerPosition()
