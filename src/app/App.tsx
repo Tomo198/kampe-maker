@@ -8,6 +8,7 @@ import { navigationService } from '../services/navigationService'
 import { ProjectListScreen } from '../screens/ProjectListScreen'
 import { NewProjectScreen } from '../screens/NewProjectScreen'
 import { HelpScreen } from '../screens/HelpScreen'
+import { UpdateToast } from '../components/layout/UpdateToast'
 
 function AppContent() {
   const currentScreen = useUIStore((s) => s.currentScreen)
@@ -39,6 +40,7 @@ export function App() {
   return (
     <ErrorBoundary>
       <AppContent />
+      <UpdateToast />
     </ErrorBoundary>
   )
 }

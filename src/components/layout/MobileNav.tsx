@@ -1,41 +1,39 @@
 import { useUIStore } from '../../store/uiStore'
-import type { SidebarTab } from '../../store/uiStore'
+import { useAutoSave } from '../../features/projects/useAutoSave'
 import './MobileNav.css'
 
-const NAV_ITEMS: { key: SidebarTab | 'save'; label: string }[] = [
-  { key: 'assets', label: '素材' },
-  { key: 'text', label: 'テキスト' },
-  { key: 'stamps', label: 'スタンプ' },
-  { key: 'layers', label: 'レイヤー' },
-  { key: 'save', label: '保存' },
-]
-
 export function MobileNav() {
-  const activeTab = useUIStore((s) => s.activeSidebarTab)
-  const setTab = useUIStore((s) => s.setSidebarTab)
+  const activeMobilePanel = useUIStore((s) => s.activeMobilePanel)
+  const setActiveMobilePanel = useUIStore((s) => s.setActiveMobilePanel)
+  const { triggerImmediateSave } = useAutoSave()
 
-  const handleTap = (key: string) => {
-    if (key === 'save') {
-      // Phase 4 will implement save
-      return
+  const togglePanel = (panel: 'sidebar' | 'property') => {
+    if (activeMobilePanel === panel) {
+      setActiveMobilePanel(null)
+    } else {
+      setActiveMobilePanel(panel)
     }
-    setTab(key as SidebarTab)
   }
 
   return (
     <nav className="mobile-nav" aria-label="モバイルナビゲーション">
-      {NAV_ITEMS.map((item) => (
-        <button
-          key={item.key}
-          className={`mobile-nav-item ${
-            item.key !== 'save' && activeTab === item.key ? 'mobile-nav-item--active' : ''
-          }`}
-          onClick={() => handleTap(item.key)}
-          aria-label={item.label}
-        >
-          <span className="mobile-nav-label">{item.label}</span>
-        </button>
-      ))}
+      <button
+        className={`mobile-nav-item ${activeMobilePanel === 'sidebar' ? 'mobile-nav-item--active' : ''}`}
+        onClick={() => togglePanel('sidebar')}
+      >
+        <span className="mobile-nav-label">ツールと素材</span>
+      </button>
+
+      <button
+        className={`mobile-nav-item ${activeMobilePanel === 'property' ? 'mobile-nav-item--active' : ''}`}
+        onClick={() => togglePanel('property')}
+      >
+        <span className="mobile-nav-label">プロパティ</span>
+      </button>
+
+      <button className="mobile-nav-item" onClick={() => triggerImmediateSave()}>
+        <span className="mobile-nav-label">保存</span>
+      </button>
     </nav>
   )
 }

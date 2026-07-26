@@ -4,7 +4,8 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: var(--mobile-nav-height);
+  height: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   background: var(--color-bg-secondary);
   border-top: 1px solid var(--color-border);
   z-index: var(--z-mobile-nav);

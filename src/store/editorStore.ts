@@ -14,6 +14,8 @@ export type EditorState = {
   setZoom: (zoom: number) => void
   pan: { x: number; y: number }
   setPan: (pan: { x: number; y: number }) => void
+  viewportManuallyAdjusted: boolean
+  setViewportManuallyAdjusted: (adjusted: boolean) => void
 
   // Ephemeral states
   isDragging: boolean
@@ -40,6 +42,8 @@ export const useEditorStore = create<EditorState>((set) => ({
   setZoom: (zoom) => set({ zoom }),
   pan: { x: 0, y: 0 },
   setPan: (pan) => set({ pan }),
+  viewportManuallyAdjusted: false,
+  setViewportManuallyAdjusted: (viewportManuallyAdjusted) => set({ viewportManuallyAdjusted }),
 
   isDragging: false,
   setIsDragging: (isDragging) => set({ isDragging }),

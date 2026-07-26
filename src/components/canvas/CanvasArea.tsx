@@ -12,6 +12,8 @@ import { CropUI } from './CropUI'
 import type { CanvasElement, ImageElement } from '../../models/element'
 import { calculateSnap } from '../../utils/snapping'
 import { handleNodeSelect } from '../../features/projects/selectionHandler'
+import { calculateAutoFit } from '../../utils/viewportUtils'
+import { useStageGestures } from '../../features/projects/useStageGestures'
 
 export const CanvasArea: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -51,22 +53,67 @@ export const CanvasArea: React.FC = () => {
     setSelectedElements,
     editingGroupId,
     cropMode,
+    viewportManuallyAdjusted,
+    setViewportManuallyAdjusted,
   } = useEditorStore()
 
-  // Auto-resize
+  // Touch Gestures
+  const { isPinching, onTouchStart, onTouchMove, onTouchEnd } = useStageGestures(
+    zoom,
+    setZoom,
+    pan,
+    setPan,
+    setViewportManuallyAdjusted,
+  )
+
+  // Auto-resize with ResizeObserver
   useEffect(() => {
-    const checkSize = () => {
-      if (containerRef.current) {
-        setDimensions({
-          width: containerRef.current.offsetWidth,
-          height: containerRef.current.offsetHeight,
-        })
+    if (!containerRef.current) return
+    const container = containerRef.current
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect
+        if (width > 0 && height > 0) {
+          setDimensions({ width, height })
+        }
       }
-    }
-    checkSize()
-    window.addEventListener('resize', checkSize)
-    return () => window.removeEventListener('resize', checkSize)
+    })
+    observer.observe(container)
+    return () => observer.disconnect()
   }, [])
+
+  // Auto-Fit on size changes or when not manually adjusted
+  useEffect(() => {
+    if (!project || dimensions.width === 0 || dimensions.height === 0) return
+    if (!viewportManuallyAdjusted) {
+      const fit = calculateAutoFit(
+        dimensions.width,
+        dimensions.height,
+        project.canvas.width,
+        project.canvas.height,
+      )
+      setZoom(fit.zoom)
+      setPan(fit.pan)
+    }
+  }, [dimensions, project, viewportManuallyAdjusted, setZoom, setPan])
+
+  // Explicit Auto-Fit event from toolbar
+  useEffect(() => {
+    const handleExplicitAutoFit = () => {
+      if (!project || dimensions.width === 0 || dimensions.height === 0) return
+      setViewportManuallyAdjusted(false)
+      const fit = calculateAutoFit(
+        dimensions.width,
+        dimensions.height,
+        project.canvas.width,
+        project.canvas.height,
+      )
+      setZoom(fit.zoom)
+      setPan(fit.pan)
+    }
+    window.addEventListener('editor-auto-fit', handleExplicitAutoFit)
+    return () => window.removeEventListener('editor-auto-fit', handleExplicitAutoFit)
+  }, [project, dimensions, setViewportManuallyAdjusted, setZoom, setPan])
 
   // Sync selected nodes
   useEffect(() => {
@@ -157,6 +204,7 @@ export const CanvasArea: React.FC = () => {
 
   const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault()
+    setViewportManuallyAdjusted(true)
     if (e.evt.ctrlKey) {
       const stage = e.target.getStage()
       if (!stage) return
@@ -174,7 +222,7 @@ export const CanvasArea: React.FC = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleStageMouseDown = (e: any) => {
-    if (cropMode || isSpacePressed) return
+    if (cropMode || isSpacePressed || isPinching) return
     const clickedOnEmpty = e.target === e.target.getStage() || e.target.name() === 'background'
     if (clickedOnEmpty) {
       const pos = e.target.getStage()?.getRelativePointerPosition()
@@ -204,6 +252,7 @@ export const CanvasArea: React.FC = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleStageMouseMove = (e: any) => {
+    if (isPinching) return
     if (selectionStartPos.current && selectionRect) {
       const pos = e.target.getStage()?.getRelativePointerPosition()
       if (pos) {
@@ -275,7 +324,7 @@ export const CanvasArea: React.FC = () => {
 
   // Dragging logic variables
   const handleDragStart = (e: Konva.KonvaEventObject<DragEvent>) => {
-    if (cropMode) return
+    if (cropMode || isPinching) return
     const id = e.target.id()
     const node = stageRef.current?.findOne(`#${id}`)
     if (!node) return
@@ -320,7 +369,7 @@ export const CanvasArea: React.FC = () => {
   }
 
   const handleDragMove = (e: Konva.KonvaEventObject<DragEvent>) => {
-    if (cropMode) return
+    if (cropMode || isPinching) return
     const id = e.target.id()
     if (!dragStartOffset.current[id]) return
 
@@ -415,6 +464,7 @@ export const CanvasArea: React.FC = () => {
         backgroundColor: 'var(--color-bg-canvas-outer)',
         overflow: 'hidden',
         position: 'relative',
+        touchAction: 'none',
       }}
     >
       <Stage
@@ -426,6 +476,7 @@ export const CanvasArea: React.FC = () => {
         style={{ cursor: isSpacePressed ? 'grab' : 'default' }}
         onDragMove={(e) => {
           if (e.target === stageRef.current) {
+            setViewportManuallyAdjusted(true)
             setPan({ x: e.target.x(), y: e.target.y() })
           }
         }}
@@ -436,11 +487,20 @@ export const CanvasArea: React.FC = () => {
           }
         }}
         onMouseDown={handleStageMouseDown}
-        onTouchStart={handleStageMouseDown}
+        onTouchStart={(e) => {
+          onTouchStart(e as Konva.KonvaEventObject<TouchEvent>)
+          handleStageMouseDown(e)
+        }}
         onMouseMove={handleStageMouseMove}
-        onTouchMove={handleStageMouseMove}
+        onTouchMove={(e) => {
+          onTouchMove(e as Konva.KonvaEventObject<TouchEvent>)
+          handleStageMouseMove(e)
+        }}
         onMouseUp={handleStageMouseUp}
-        onTouchEnd={handleStageMouseUp}
+        onTouchEnd={(e) => {
+          onTouchEnd(e as Konva.KonvaEventObject<TouchEvent>)
+          handleStageMouseUp()
+        }}
       >
         <Layer ref={layerRef}>
           <Group x={pan.x} y={pan.y} scaleX={zoom} scaleY={zoom}>
@@ -550,7 +610,7 @@ export const CanvasArea: React.FC = () => {
 
         <Layer>
           <Group x={pan.x} y={pan.y} scaleX={zoom} scaleY={zoom}>
-            {!cropMode && (
+            {!cropMode && !isPinching && (
               <TransformerUI
                 selectedNodes={selectedNodes}
                 onTransformEnd={(updates) => updateElements(updates)}

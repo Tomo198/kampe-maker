@@ -21,6 +21,10 @@ type UIState = {
   propertyPanelOpen: boolean
   setPropertyPanelOpen: (open: boolean) => void
 
+  // Mobile panels
+  activeMobilePanel: 'sidebar' | 'property' | null
+  setActiveMobilePanel: (panel: 'sidebar' | 'property' | null) => void
+
   // Save status
   saveStatus: SaveStatus
   setSaveStatus: (status: SaveStatus) => void
@@ -43,6 +47,9 @@ export const useUIStore = create<UIState>((set) => ({
 
   propertyPanelOpen: true,
   setPropertyPanelOpen: (open) => set({ propertyPanelOpen: open }),
+
+  activeMobilePanel: null,
+  setActiveMobilePanel: (panel) => set({ activeMobilePanel: panel }),
 
   saveStatus: 'idle',
   setSaveStatus: (status) => set({ saveStatus: status }),

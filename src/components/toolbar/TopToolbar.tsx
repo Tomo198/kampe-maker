@@ -161,7 +161,43 @@ export function TopToolbar() {
             <button className="toolbar-button" onClick={() => triggerImmediateSave()}>
               保存
             </button>
-            <span className="toolbar-zoom">{Math.round(zoom * 100)}%</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginLeft: '16px' }}>
+              <span
+                className="toolbar-zoom"
+                style={{ minWidth: '40px', textAlign: 'right', marginRight: '4px' }}
+              >
+                {Math.round(zoom * 100)}%
+              </span>
+              <button
+                className="toolbar-button"
+                style={{
+                  padding: '2px 6px',
+                  fontSize: '0.75rem',
+                  borderRadius: '4px',
+                  minWidth: 'auto',
+                }}
+                onClick={() => {
+                  useEditorStore.getState().setViewportManuallyAdjusted(true)
+                  useEditorStore.getState().setZoom(1)
+                }}
+                title="100%表示"
+              >
+                100%
+              </button>
+              <button
+                className="toolbar-button"
+                style={{
+                  padding: '2px 6px',
+                  fontSize: '0.75rem',
+                  borderRadius: '4px',
+                  minWidth: 'auto',
+                }}
+                onClick={() => window.dispatchEvent(new CustomEvent('editor-auto-fit'))}
+                title="全体表示 (Auto-Fit)"
+              >
+                Fit
+              </button>
+            </div>
           </>
         )}
       </div>

@@ -8,6 +8,7 @@ import { Sidebar } from '../sidebar/Sidebar'
 import { PropertyPanel } from '../properties/PropertyPanel'
 import { CanvasArea } from '../canvas/CanvasArea'
 import { MobileNav } from './MobileNav'
+import { MobileDrawer } from './MobileDrawer'
 import { useUIStore } from '../../store/uiStore'
 import { useEditorShortcuts } from '../../features/projects/useEditorShortcuts'
 import './EditorLayout.css'
@@ -16,6 +17,8 @@ export function EditorLayout() {
   const sidebarOpen = useUIStore((s) => s.sidebarOpen)
   const propertyPanelOpen = useUIStore((s) => s.propertyPanelOpen)
   const currentProjectId = useUIStore((s) => s.currentProjectId)
+  const activeMobilePanel = useUIStore((s) => s.activeMobilePanel)
+  const setActiveMobilePanel = useUIStore((s) => s.setActiveMobilePanel)
   const initProject = useProjectStore((s) => s.initProject)
 
   const { triggerImmediateSave } = useAutoSave()
@@ -119,6 +122,23 @@ export function EditorLayout() {
         )}
       </div>
       <MobileNav />
+
+      {/* Mobile Drawers */}
+      <MobileDrawer
+        isOpen={activeMobilePanel === 'sidebar'}
+        onClose={() => setActiveMobilePanel(null)}
+        title="ツールと素材"
+      >
+        <Sidebar />
+      </MobileDrawer>
+
+      <MobileDrawer
+        isOpen={activeMobilePanel === 'property'}
+        onClose={() => setActiveMobilePanel(null)}
+        title="プロパティ"
+      >
+        <PropertyPanel />
+      </MobileDrawer>
     </div>
   )
 }
