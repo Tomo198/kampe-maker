@@ -37,7 +37,9 @@ export const CropUI: React.FC<{
     let isMounted = true
     const img = new Image()
     img.onload = () => {
-      if (isMounted) setImage(img)
+      if (isMounted && img.naturalWidth > 0 && img.naturalHeight > 0) {
+        setImage(img)
+      }
     }
     img.src = objectUrl
     return () => {

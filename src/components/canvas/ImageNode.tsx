@@ -42,7 +42,7 @@ export const ImageNode: React.FC<Props> = ({
     let isMounted = true
     const img = new Image()
     img.onload = () => {
-      if (isMounted) {
+      if (isMounted && img.naturalWidth > 0 && img.naturalHeight > 0) {
         setImage(img)
       }
     }
